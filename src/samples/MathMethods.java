@@ -15,7 +15,6 @@ public class MathMethods {
 
     void program() {
         double d = 2.1;
-
         out.println("Square root " + sqrt(d));
         out.println("Square " + pow(d, 2));
         out.println("Floor " + floor(d));

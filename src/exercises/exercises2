@@ -37,10 +37,10 @@ Exercises
     Use functional decomposition if things getting too complex.
 
 3.  See Ex3Theory. Just uncomment (possibly run) and explain result (write it here)
-    1.  (write short explanation)
-    2.
-    3.
-    4.
+    1. First one is the only correct one, rest are either bad maths or using integer division which returns 1 for 4 / 3
+    2. We have already initialized x and y in first case, in second case x is already defined, in third case neither one is initialized(print statement is outside block)
+    3. Rounding errors are introduced when storing doubles, which gives inexact results
+    4. First one is just regular addition, second is concatenation of strings, thirds is addition then concatenation, fourth is concatenation only, fifth is addition(of character number probably),sixth is concatenation since we have a string
     5.
 
 4.  Ex4GameOfLife. Implement a simulation of "Game of Life", see

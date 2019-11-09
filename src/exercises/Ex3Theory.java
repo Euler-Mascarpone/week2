@@ -18,7 +18,7 @@ public class Ex3Theory {
         // 1. -------------------------------------------
 
         // Uncomment and run. Which value is correct for the volume of a sphere?
-        /*
+
         int r = 10;
         double pi = 3.141;
         double vol1 = 4 * pi / 3 * r * r * r;
@@ -30,7 +30,7 @@ public class Ex3Theory {
         out.println(vol2);
         out.println(vol3);
         out.println(vol4);
-        */
+
 
         // 2. ---------------------------------------------------
 
@@ -56,7 +56,7 @@ public class Ex3Theory {
         // 3. ----------------------------------------------------------
 
         // Uncomment and run. Explain result!
-        /*
+
         double d1 = 1.0;
         double d2 = 1.0;
         d1 = d1 - 0.7 - 0.3;
@@ -64,19 +64,19 @@ public class Ex3Theory {
         out.println(d1 == 0);
         out.println(d2 == 0);
         out.println(d1 == d2);
-        */
+
 
         // 4. -----------------------------------------------------
 
         // Uncomment and run. Explain output!
-        /*
+
         out.println(1 + 2);
         out.println("2 + 1");
         out.println(1 + 2.0 + "a");
         out.println("a" + 1 + 2);
         out.println('a' + 1 + 2);
         out.println("a" + 'a');
-        */
+
 
         // 5. ---------------------------------
         // Why is there no return type for a constructor?

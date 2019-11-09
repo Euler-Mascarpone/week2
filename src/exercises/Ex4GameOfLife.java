@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.Random;
+import java.util.Arrays;
 
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
@@ -45,31 +46,127 @@ public class Ex4GameOfLife extends Application {
 
     @Override
     public void init() {
-        // test();        // <--------------- Uncomment to test!
+        //test();        // <--------------- Uncomment to test!
         int nLocations = 10000;
         double distribution = 0.15;   // % of locations holding a Cell
 
-        // TODO create world
-        //world =
+
+        world = worldCreator(nLocations, distribution);
     }
 
 
     // Implement this method (using functional decomposition)
     // Every involved method should be tested, see below, method test()
     // This method is automatically called by a JavaFX timer (don't need to call it)
+
+
     void update() {
-        // TODO update world
-        // world =
+        int dim = world.length;
+        Cell[][] worldTemp = new Cell[dim][dim]; //Best to make a separate copy;
+        for (int i = 0; i < dim; i++) { //Looping through rows
+            for (int j = 0; j < dim; j++) { //And columns
+                Cell tempCell = world[i][j];
+                int k = cellCounter(i, j, world); //Number of alive neighbouring cells
+                if (tempCell == Cell.ALIVE) {
+                    if (k < 2) {
+                        worldTemp[i][j] = Cell.DEAD;
+                    } else if(k == 2 || k==3 ) {
+                        worldTemp[i][j] = Cell.ALIVE;
+                    }else{ //k > 3, overpopulation
+                        worldTemp[i][j] = Cell.DEAD;
+                    }
+                }
+                if(tempCell == Cell.DEAD && k==3){ //Reproduction
+                    worldTemp[i][j] = Cell.ALIVE;
+                }
+            }
+        }
+        world = worldTemp;
     }
 
     // -------- Write methods below this --------------
 
-   // TODO
+    // TODO
+
+    int cellCounter(int i, int j, Cell[][] world) { //Counts the number of neighbouring live cells
+        int sum = 0;
+        int size = world.length;
+        for (int iTemp = i - 1; iTemp <= i + 1; iTemp++) { //Variable already initialized
+            for (int jTemp = j - 1; jTemp <= j + 1; jTemp++) {
+                if (isValidLocation(size, iTemp, jTemp) && (iTemp != i || jTemp != j) && world[iTemp][jTemp] == Cell.ALIVE) { //If it isn't out of bounds and not the cell in question and alive
+                    sum++;
+                }
+            }
+        }
+        return sum;
+    }
+
+    Cell[][] worldCreator(int size, double dist) {
+        int alive = (int) Math.round(size * dist); //Number of alive cells
+        int dimension = (int) Math.round(sqrt(size)); //Dimensions
+        return getRand(alive, dimension); //Creates the world
+    }
+
+    Cell[][] getRand(int n, int dim) {
+        Cell[][] arr = new Cell[dim][dim]; //Empty array of size x size numbers
+        int totSize = dim * dim;
+        int randNumb;
+        for (int i = 0; i < n; i++) { //Assume n first elements are alive, they will now be shuffled
+            randNumb = rand.nextInt(totSize - i); //Better shuffling algorithm than in ex1, takes one element at a time.
+            int[] iCoords = indexMat(i, dim);
+            int[] randCoords = indexMat(randNumb + i, dim); //Corresponding row and column in matrix, we add i because we do not want to pick one of the elements we've already shuffled
+            if (randNumb + i < n) { //then both are alive because first n are alive, remember that we can't pick something already shuffled
+                arr[iCoords[0]][iCoords[1]] = Cell.ALIVE; //Actually makes them alive
+                arr[randCoords[0]][randCoords[1]] = Cell.ALIVE;
+            } else if (arr[randCoords[0]][randCoords[1]] == null) { //Then we picked something outside, which has not been shuffled before i.e is dead
+                arr[iCoords[0]][iCoords[1]] = Cell.DEAD;
+                arr[randCoords[0]][randCoords[1]] = Cell.ALIVE; //Switches the cells
+            } else { //Then we've encountered something outside which is either dead or alive
+                arr[iCoords[0]][iCoords[1]] = arr[randCoords[0]][randCoords[1]];
+                arr[randCoords[0]][randCoords[1]] = Cell.ALIVE; //Switches places
+            }
+        }
+        Cell k; //We'll need this later
+        for (int i = n; i < dim * dim; i++) { //Time to loop the rest
+            randNumb = rand.nextInt(totSize - i); //Basically the same code
+            int[] iCoords = indexMat(i, dim);
+            int[] randCoords = indexMat(randNumb + i, dim);
+            if (arr[randCoords[0]][randCoords[1]] == null && arr[iCoords[0]][iCoords[1]] == null) { //i.e they are dead
+                arr[randCoords[0]][randCoords[1]] = Cell.DEAD;
+                arr[iCoords[0]][iCoords[1]] = Cell.DEAD; //They were dead all along
+            } else if (arr[randCoords[0]][randCoords[1]] == null) { //Then iCoord element has to be not null
+                k = arr[iCoords[0]][iCoords[1]]; //Saves for later
+                arr[iCoords[0]][iCoords[1]] = Cell.DEAD;
+                arr[randCoords[0]][randCoords[1]] = k; //Switches places
+            } else if (arr[iCoords[0]][iCoords[1]] == null) {
+                k = arr[randCoords[0]][randCoords[1]]; //Saves for later
+                arr[randCoords[0]][randCoords[1]] = Cell.DEAD;
+                arr[iCoords[0]][iCoords[1]] = k; //Switches places
+            } else { //Both are not null so just switch
+                k = arr[iCoords[0]][iCoords[1]]; //Saves for later
+                arr[iCoords[0]][iCoords[1]] = arr[randCoords[0]][randCoords[1]];
+                arr[randCoords[0]][randCoords[1]] = k; //Switches places
+            }
+        }
+        return arr;
+
+    }
+
+    int[] indexMat(int k, int dim) { //Converts an index from an array to an index in a 2d-array(square), left to right
+        int[] index = {k / dim, k % dim}; //Row and column
+        return index;
+    }
 
 
     // Check if inside world
     boolean isValidLocation(int size, int row, int col) {
         return 0 <= row && row < size && 0 <= col && col < size;
+    }
+
+    void plot(Cell[][] matrix) {
+        for (int row = 0; row < matrix.length; row++) {
+            out.println(Arrays.toString(matrix[row]));
+        }
     }
 
     // ---------- Testing -----------------
@@ -81,10 +178,8 @@ public class Ex4GameOfLife extends Application {
                 {Cell.ALIVE, Cell.ALIVE, Cell.DEAD},
                 {Cell.ALIVE, Cell.DEAD, Cell.DEAD},
                 {Cell.DEAD, Cell.DEAD, Cell.ALIVE},
-
         };
         int size = testWorld.length;
-
         out.println(isValidLocation(size, 0, 0));  // All should be true
         out.println(!isValidLocation(size, 0, 3));
 
